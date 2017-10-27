@@ -18,7 +18,9 @@ class Php71Mongodb < AbstractPhp71Extension
 
   def install
     Dir.chdir "mongodb-#{version}" unless build.head?
-
+    if MacOS.version == "10.11" && MacOS::Xcode.installed? && MacOS::Xcode.version >= "8.0"
+      inreplace %w[src/libbson/src/bson/bson-clock.c], "HAVE_CLOCK_GETTIME", "UNDEFINED_GIBBERISH"
+    end
     safe_phpize
     system "./configure", "--prefix=#{prefix}",
                           phpconfig,
